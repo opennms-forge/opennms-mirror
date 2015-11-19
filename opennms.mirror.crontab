@@ -8,3 +8,6 @@
 
 # Update Debian releases mirror every four hours.
 42 */4 * * * /usr/bin/opennms.debian >/dev/null
+
+# Update Maven mirror every four hours.
+0 */4 * * * /usr/bin/opennms.maven >/dev/null
