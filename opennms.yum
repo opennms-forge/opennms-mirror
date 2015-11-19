@@ -23,18 +23,18 @@ fi
 
 . /etc/opennms.mirror.conf
 
-LOGFILE="${LOGDIR}/opennms.debian.log"
+LOGFILE="${LOGDIR}/opennms.yum.log"
 
 # Log all activity to file.
 exec >> ${LOGFILE} 2>&1
 
-if [ -z "${OPENNMS_DEBIAN_DIR}" ]; then
-    echo -n "No OpenNMS Debian target directory (OPENNMS_DEBIAN_DIR) set in "
+if [ -z "${OPENNMS_YUM_DIR}" ]; then
+    echo -n "No OpenNMS Yum target directory (OPENNMS_YUM_DIR) set in "
     echo "/etc/opennms.mirror.conf."
     exit 2
 fi
 
-LOCK="${OPENNMS_DEBIAN_DIR}/Archive-Update-in-Progress-${HOSTNAME}"
+LOCK="${OPENNMS_YUM_DIR}/Archive-Update-in-Progress-${HOSTNAME}"
 
 trap 'rm -f $LOCK > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
 
@@ -42,7 +42,7 @@ trap 'rm -f $LOCK > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
 cd ${HOME}
 umask 022
 
-echo "$(date -R): Initiating OpenNMS Debian mirror operations..."
+echo "$(date -R): Initiating OpenNMS Yum mirror operations..."
 
 # Check to see if another sync is in progress
 if ! ( set -o noclobber; echo "$$" > "${LOCK}") 2> /dev/null; then
@@ -58,50 +58,50 @@ fi
 echo "$(date -R): Lock established for process $(cat $LOCK)."
 
 set +e
-echo "$(date -R): Initiating OpenNMS Debian pool sync..."
+echo "$(date -R): Initiating OpenNMS Yum pool sync..."
 
 rsync -av --partial --delete --delete-after \
       --timeout=${IO_TIMEOUT} \
       --bwlimit=${SPEED} \
       --exclude "dists/" \
       --exclude "Archive-Update-in-Progress-${HOSTNAME}" \
-      ${OPENNMS_DEBIAN_EXCLUDE} \
-      ${OPENNMS_DEBIAN_MIRROR} ${OPENNMS_DEBIAN_DIR}
+      ${OPENNMS_YUM_EXCLUDE} \
+      ${OPENNMS_YUM_MIRROR} ${OPENNMS_YUM_DIR}
 
 if [ $? -ne 0 ]; then
-    ( echo "OpenNMS Debian pool sync failed. Please check logs."; \
-        egrep '^write failed|@ERROR' $LOGFILE ) | mail -s "OpenNMS Debian pool sync failed" ${EMAIL}
-    echo "$(date -R): OpenNMS Debian pool sync failed."
+    ( echo "OpenNMS Yum pool sync failed. Please check logs."; \
+        egrep '^write failed|@ERROR' $LOGFILE ) | mail -s "OpenNMS Yum pool sync failed" ${EMAIL}
+    echo "$(date -R): OpenNMS Yum pool sync failed."
     exit 1
 fi
 
-echo "$(date -R): OpenNMS Debian pool sync completed."
+echo "$(date -R): OpenNMS Yum pool sync completed."
 
-echo "$(date -R): Initiating OpenNMS Debian dists sync..."
+echo "$(date -R): Initiating OpenNMS Yum dists sync..."
 
 rsync -av --partial --delete --delete-after \
       --timeout=${IO_TIMEOUT}  \
       --bwlimit=${SPEED} \
       --exclude "Archive-Update-in-Progress-${HOSTNAME}" \
-      ${OPENNMS_DEBIAN_EXCLUDE} \
-      ${OPENNMS_DEBIAN_MIRROR} ${OPENNMS_DEBIAN_DIR}
+      ${OPENNMS_YUM_EXCLUDE} \
+      ${OPENNMS_YUM_MIRROR} ${OPENNMS_YUM_DIR}
 
 if [ $? -ne 0 ]; then
-    ( echo "OpenNMS Debian dists sync failed. Please check logs."; \
-        grep '@ERROR' ${LOGFILE} ) | mail -s "OpenNMS Debian dists sync failed" ${EMAIL}
-    echo "$(date -R): OpenNMS Debian dists sync failed."
+    ( echo "OpenNMS Yum dists sync failed. Please check logs."; \
+        grep '@ERROR' ${LOGFILE} ) | mail -s "OpenNMS Yum dists sync failed" ${EMAIL}
+    echo "$(date -R): OpenNMS Yum dists sync failed."
     exit 2
 fi
 
-echo "$(date -R): OpenNMS Debian dists sync completed."
+echo "$(date -R): OpenNMS Yum dists sync completed."
 
 echo "$(date -R): Removing soft-links from mirror..."
-find ${OPENNMS_DEBIAN_DIR} -type l -xtype l | xargs -r rm
+find ${OPENNMS_YUM_DIR} -type l -xtype l | xargs -r rm
 
 echo "$(date -R): Releasing lock file..."
 rm -f ${LOCK} > /dev/null 2>&1
 
 echo "$(date -R): Time-stamping trace file..."
-date -u > "${OPENNMS_DEBIAN_DIR}/${HOSTNAME}"
+date -u > "${OPENNMS_YUM_DIR}/${HOSTNAME}"
 
-echo "$(date -R): OpenNMS Debian mirror operations completed."
+echo "$(date -R): OpenNMS Yum mirror operations completed."
