@@ -58,25 +58,6 @@ fi
 echo "$(date -R): Lock established for process $(cat $LOCK)."
 
 set +e
-echo "$(date -R): Initiating OpenNMS Yum pool sync..."
-
-rsync -av --partial --delete --delete-after \
-      --timeout=${IO_TIMEOUT} \
-      --bwlimit=${SPEED} \
-      --exclude "dists/" \
-      --exclude "Archive-Update-in-Progress-${HOSTNAME}" \
-      ${OPENNMS_YUM_EXCLUDE} \
-      ${OPENNMS_YUM_MIRROR} ${OPENNMS_YUM_DIR}
-
-if [ $? -ne 0 ]; then
-    ( echo "OpenNMS Yum pool sync failed. Please check logs."; \
-        egrep '^write failed|@ERROR' $LOGFILE ) | mail -s "OpenNMS Yum pool sync failed" ${EMAIL}
-    echo "$(date -R): OpenNMS Yum pool sync failed."
-    exit 1
-fi
-
-echo "$(date -R): OpenNMS Yum pool sync completed."
-
 echo "$(date -R): Initiating OpenNMS Yum dists sync..."
 
 rsync -av --partial --delete --delete-after \

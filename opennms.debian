@@ -58,26 +58,7 @@ fi
 echo "$(date -R): Lock established for process $(cat $LOCK)."
 
 set +e
-echo "$(date -R): Initiating OpenNMS Debian pool sync..."
-
-rsync -av --partial --delete --delete-after \
-      --timeout=${IO_TIMEOUT} \
-      --bwlimit=${SPEED} \
-      --exclude "dists/" \
-      --exclude "Archive-Update-in-Progress-${HOSTNAME}" \
-      ${OPENNMS_DEBIAN_EXCLUDE} \
-      ${OPENNMS_DEBIAN_MIRROR} ${OPENNMS_DEBIAN_DIR}
-
-if [ $? -ne 0 ]; then
-    ( echo "OpenNMS Debian pool sync failed. Please check logs."; \
-        egrep '^write failed|@ERROR' $LOGFILE ) | mail -s "OpenNMS Debian pool sync failed" ${EMAIL}
-    echo "$(date -R): OpenNMS Debian pool sync failed."
-    exit 1
-fi
-
-echo "$(date -R): OpenNMS Debian pool sync completed."
-
-echo "$(date -R): Initiating OpenNMS Debian dists sync..."
+echo "$(date -R): Initiating OpenNMS Debian sync..."
 
 rsync -av --partial --delete --delete-after \
       --timeout=${IO_TIMEOUT}  \
@@ -93,7 +74,7 @@ if [ $? -ne 0 ]; then
     exit 2
 fi
 
-echo "$(date -R): OpenNMS Debian dists sync completed."
+echo "$(date -R): OpenNMS Debian sync completed."
 
 echo "$(date -R): Removing soft-links from mirror..."
 find ${OPENNMS_DEBIAN_DIR} -type l -xtype l | xargs -r rm
