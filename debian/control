@@ -1,0 +1,19 @@
+Source: ubumirror
+Section: net
+Priority: optional
+Maintainer: Jonathan Davies <jpds@ubuntu.com>
+Build-Depends: debhelper (>= 9.0.0)
+Standards-Version: 3.9.5
+Homepage: https://launchpad.net/ubumirror
+
+Package: ubumirror
+Architecture: all
+Depends: ${misc:Depends}, cron, rsync
+Recommends: postfix | mail-transport-agent, apache2 | httpd
+Suggests: vsftpd | proftpd
+Description: Ubuntu mirror scripts
+ This package contains scripts for mirroring various parts of the Ubuntu
+ infrastructure.
+ .
+ This includes archives packages, ISO files for releases, daily builds for ISO
+ files from cdimage and DVD images.

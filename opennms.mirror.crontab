@@ -1,0 +1,10 @@
+# This file can be put as-is in the /etc/cron.d/ directory.
+#
+# !!! Please consider changing run minutes to something random so as to not
+# artifically overload main archives at specific times.
+#
+# Update YUM releases mirror every four hours.
+23 */4 * * * /usr/bin/opennms.yum >/dev/null
+
+# Update Debian releases mirror every four hours.
+42 */4 * * * /usr/bin/opennms.debian >/dev/null
