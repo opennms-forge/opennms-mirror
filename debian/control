@@ -1,19 +1,18 @@
-Source: ubumirror
+Source: opennms-mirror
 Section: net
 Priority: optional
-Maintainer: Jonathan Davies <jpds@ubuntu.com>
+Maintainer: Ronny Trommer <ronny@opennms.org>
 Build-Depends: debhelper (>= 9.0.0)
 Standards-Version: 3.9.5
-Homepage: https://launchpad.net/ubumirror
+Homepage: https://github.com/opennms-forge/opennms-mirror
 
-Package: ubumirror
+Package: opennms-mirror
 Architecture: all
 Depends: ${misc:Depends}, cron, rsync
 Recommends: postfix | mail-transport-agent, apache2 | httpd
 Suggests: vsftpd | proftpd
-Description: Ubuntu mirror scripts
- This package contains scripts for mirroring various parts of the Ubuntu
+Description: OpenNMS mirror scripts
+ This package contains scripts for mirroring various parts of the OpenNMS
  infrastructure.
  .
- This includes archives packages, ISO files for releases, daily builds for ISO
- files from cdimage and DVD images.
+ This includes packages and Java Maven dependencies.
